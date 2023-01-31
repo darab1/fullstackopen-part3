@@ -1,7 +1,9 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
   { 
@@ -41,7 +43,6 @@ app.get('/info', (req, res) => {
 
 // GET ALL PERSONS
 app.get('/api/persons', (req, res) => {
-  console.log('inside get all persons functionality')
   res.json(persons)
 })
 
