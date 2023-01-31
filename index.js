@@ -26,7 +26,9 @@ let persons = [
   }
 ]
 
-
+function generateId() {
+  return Math.floor(Math.random() * 100000000000)
+}
 
 // GET INFO
 app.get('/info', (req, res) => {
@@ -59,7 +61,22 @@ app.get('/api/persons/:id', (req, res) => {
   res.json(person)
 })
 
-// DELET PERSON
+// CREATE NEW PERSON
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(person)
+
+  res.json(persons)
+})
+
+// DELETE PERSON
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
   persons = persons.filter(p => p.id !== id)
