@@ -73,36 +73,34 @@ app.get('/api/persons/:id', (req, res) => {
 // CREATE NEW PERSON
 app.post('/api/persons', (req, res) => {
   const body = req.body
-  const found = persons.find(p => p.name === body.name)
+  // const found = persons.find(p => p.name === body.name)
 
-  if (!body.name ) {
-    return res.status(404).json({
+  if (body.name === undefined ) {
+    return res.status(400).json({
       error: 'name is required'
     })
   }
 
-  if (!body.number) {
-    return res.status(404).json({
+  if (body.number === undefined) {
+    return res.status(400).json({
       error: 'number is required'
     })
   }
 
-  if (found) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    })
+  // if (found) {
+  //   return res.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // }
 
-  }
-
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(person)
-
-  res.json(persons)
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 // DELETE PERSON
