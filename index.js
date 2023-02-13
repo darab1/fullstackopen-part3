@@ -73,7 +73,6 @@ app.get('/api/persons/:id', (req, res) => {
 // CREATE NEW PERSON
 app.post('/api/persons', (req, res) => {
   const body = req.body
-  // const found = persons.find(p => p.name === body.name)
 
   if (body.name === undefined ) {
     return res.status(400).json({
@@ -87,12 +86,6 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  // if (found) {
-  //   return res.status(400).json({
-  //     error: 'name must be unique'
-  //   })
-  // }
-
   const person = new Person({
     name: body.name,
     number: body.number
@@ -101,6 +94,19 @@ app.post('/api/persons', (req, res) => {
   person.save().then(savedPerson => {
     res.json(savedPerson)
   })
+})
+
+// UPDATE PERSON
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body 
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => res.json(updatedPerson))
+    .catch(err => next(err))
 })
 
 // DELETE PERSON
