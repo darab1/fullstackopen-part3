@@ -70,7 +70,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 })
 
 // CREATE NEW PERSON
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   if (body.name === undefined ) {
@@ -90,20 +90,26 @@ app.post('/api/persons', (req, res) => {
     number: body.number
   })
 
-  person.save().then(savedPerson => {
+  person.save()
+    .then(savedPerson => {
     res.json(savedPerson)
-  })
+    })
+    .catch(err => next(err))
 })
 
 // UPDATE PERSON
 app.put('/api/persons/:id', (req, res, next) => {
-  const body = req.body 
-  const person = {
-    name: body.name,
-    number: body.number
-  }
+  const { name, number } = req.body 
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(
+    req.params.id,
+    { name, number },
+    {
+      new: true,
+      runValidators: true,
+      context: 'query'
+    }
+  )
     .then(updatedPerson => res.json(updatedPerson))
     .catch(err => next(err))
 })
@@ -117,10 +123,12 @@ app.delete('/api/persons/:id', (req, res, next) => {
 
 // FUNCTIONALITY FOR HANDLING ERRRORS
 const errorHandler = (err, req, res, next) => {
-  console.log(err.message)
+  console.log('Inside errorHandler, err.message: ', err.message)
 
   if (err.name === 'CastError') {
     return res.status(400).send({ err: 'malformed id' })
+  } else if (err.name === 'ValidationError') {
+    return res.status(400).send({ err: 'validation error' })
   }
 
   next(err)
