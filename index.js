@@ -110,6 +110,19 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(err => next(err))
 })
 
+// FUNCTIONALITY FOR HANDLING ERRRORS
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message)
+
+  if (err.name === 'CastError') {
+    return res.status(400).send({ err: 'malformed id' })
+  }
+
+  next(err)
+}
+
+app.use(errorHandler)
+
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
