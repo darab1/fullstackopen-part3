@@ -40,11 +40,13 @@ function generateId() {
 
 // GET INFO
 app.get('/info', (req, res) => {
-  const date = new Date()
-  res.send(`
-  <p>Phonebook has info for ${persons.length} people</p>
-  <p>${date}</p>
-  `)
+  Person.find({})
+    .then(persons => {
+      res.send(`
+        <p>Phonebook has info for ${persons.length} people</p>
+        <p>${new Date()}</p>
+      `)
+    })
 })
 
 // GET ALL PERSONS
@@ -55,19 +57,16 @@ app.get('/api/persons', (req, res) => {
 })
 
 // GET PERSON
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(p => {
-    return p.id === id
-  })
-
-  if (!person) {
-    return res.status(404).json({
-      error: `Person with the id of ${id} does not exist`
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.json(404).end()
+      }
     })
-  }
-
-  res.json(person)
+    .catch(err => next(err))
 })
 
 // CREATE NEW PERSON
