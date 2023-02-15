@@ -127,8 +127,12 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === 'CastError') {
     return res.status(400).send({ err: 'malformed id' })
-  } else if (err.name === 'ValidationError') {
-    return res.status(400).send({ err: 'validation error' })
+  }
+  else if (err.message.includes('name')) {
+    return res.status(400).send({ err: 'name needs to be at least 3 characters' })
+  }
+  else if (err.message.includes('number')) {
+    return res.status(400).send({ err: 'invalid phone number' })
   }
 
   next(err)
