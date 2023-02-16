@@ -13,7 +13,7 @@ mongoose.connect(url)
   .catch(err => {
     console.log('Failed to connect to MongoDB: ', err.message)
   })
-  
+
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -41,7 +41,7 @@ const personSchema = new mongoose.Schema({
     }
   }
 })
-  
+
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
